@@ -84,8 +84,8 @@ public class Gun extends Weapon {
 
         lastShotTime = currentTime; // Update the last shot time
 
-        // Update the cursor position based on player input (real-time)
-        updateCursorPosition(player.getCursorPosition());
+        // Ensure the gun tip position is updated before firing
+        updateGunTip(player.getX(), player.getY(), player.isFacingRight());
 
         // Check if ammo is available
         if (ammo > 0) {
@@ -102,7 +102,6 @@ public class Gun extends Weapon {
             );
 
             bullets.add(bullet); // Add bullet to the list
-            System.out.println("Gun fired! Ammo left: " + ammo);
         } else {
             System.out.println("Out of ammo!");
         }
@@ -128,21 +127,9 @@ public class Gun extends Weapon {
         return bullets;
     }
 
-    // Getters for angle, gun tip position, and ammo count
-    public double getAngle() {
-        return angle;
-    }
-
-    public Point2D getGunTip() {
-        return gunTip;
-    }
-
-    public int getAmmo() {
-        return ammo;
-    }
-
-    @Override
-    public void render(Graphics g, int playerX, int playerY) {
-        // Placeholder for rendering without rotation
-    }
+	@Override
+	public void render(Graphics g, int playerX, int playerY) {
+		// TODO Auto-generated method stub
+		
+	}
 }
