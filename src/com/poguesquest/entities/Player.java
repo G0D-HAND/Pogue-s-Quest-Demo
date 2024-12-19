@@ -48,7 +48,7 @@ public class Player {
         }
 
         this.facingRight = true;
-        this.cursorPosition = new Point(0, 0); // Default cursor position
+        this.cursorPosition = new Point(0, 0); // Default cursor position (initialize cursorPosition)
     }
 
     // Update method for movement, aiming, and animations
@@ -75,11 +75,13 @@ public class Player {
         }
 
         // Update facing direction based on cursor
-        this.cursorPosition = cursor; // Update cursor position
-        if (cursor.getX() < x + 35 / 2.0) { // Cursor is left of player center
-            facingRight = false;
-        } else { // Cursor is right of player center
-            facingRight = true;
+        if (cursor != null) { // Ensure cursor is not null
+            this.cursorPosition = cursor; // Update cursor position
+            if (cursor.getX() < x + 35 / 2.0) { // Cursor is left of player center
+                facingRight = false;
+            } else { // Cursor is right of player center
+                facingRight = true;
+            }
         }
 
         // Update hitbox position
@@ -110,7 +112,6 @@ public class Player {
     // Equip a weapon
     public void equipWeapon(Weapon weapon) {
         this.equippedWeapon = weapon;
-        System.out.println("Equipped weapon: " + weapon.getName());
     }
 
     // Render method to display player animations, health, ammo, and hitbox
@@ -130,10 +131,6 @@ public class Player {
             g.drawImage(flipHorizontally(frame), x, y, null); // Flip if facing left
         }
 
-        // Debug: Draw hitbox
-        g.setColor(Color.RED);
-        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-        
         // If a weapon is equipped, render it
         Weapon equippedWeapon = this.getEquippedWeapon();
         if (equippedWeapon != null) {
@@ -197,7 +194,6 @@ public class Player {
         return cursorPosition;
     }
     
-    // Add this method to the Player class
     public boolean isFacingRight() {
         return facingRight;
     }
