@@ -32,7 +32,7 @@ public class Main extends JPanel implements Runnable {
         // Initialize the camera with a scale factor of 2.0
         camera = new Camera(800, 600, 2.0);
 
-        mouseHandler = new MouseHandler(); // MouseHandler no longer needs the camera reference
+        mouseHandler = new MouseHandler(); // Pass the camera to the MouseHandler
         keyHandler = new KeyHandler();
 
         // Load sprite sheets
@@ -47,7 +47,7 @@ public class Main extends JPanel implements Runnable {
         MapGenerator generator = new MapGenerator(50, 50, System.currentTimeMillis());
         map = generator.generateMap(500, startX, startY); // Player starts at the center (startX, startY)
 
-        // Initialize the player at the center of the 3x3 area, passing the camera reference
+        // Initialize the player at the center of the 3x3 area
         player = new Player(startX * tileSize, startY * tileSize, walkingSpriteSheet, idleSpriteSheet, tileSize, camera);
         player.equipWeapon(pistol);
 
@@ -144,10 +144,34 @@ public class Main extends JPanel implements Runnable {
     private void renderMap(Graphics g) {
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[0].length; x++) {
-                if (map[y][x] == 1) {
-                    g.setColor(Color.GRAY); // Floor color
-                } else {
-                    g.setColor(Color.DARK_GRAY); // Wall color
+                switch (map[y][x]) {
+                    case 1: // Floor
+                        g.setColor(Color.GRAY);
+                        break;
+                    case 0: // Wall
+                        g.setColor(Color.DARK_GRAY);
+                        break;
+                    case 2: // Floor below wall
+                        g.setColor(Color.LIGHT_GRAY);
+                        break;
+                    case 3: // Floor above wall
+                        g.setColor(Color.WHITE);
+                        break;
+                    case 4: // Wall corner
+                        g.setColor(Color.RED);
+                        break;
+                    case 5: // Wall without floor beside it
+                        g.setColor(Color.ORANGE);
+                        break;
+                    case 6: // Wall beside floor on left
+                        g.setColor(Color.GREEN);
+                        break;
+                    case 7: // Wall beside floor on right
+                        g.setColor(Color.BLUE);
+                        break;
+                    default:
+                        g.setColor(Color.BLACK);
+                        break;
                 }
                 g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize); // Assuming each tile is 35x35 pixels
             }
