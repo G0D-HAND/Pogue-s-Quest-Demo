@@ -5,7 +5,7 @@ import java.util.Random;
 public class MapGenerator {
     private final int width;  // Total width of the map (in tiles)
     private final int height; // Total height of the map (in tiles)
-    private final int[][] map; // The map grid (1 = floor, 0 = wall, 2 = floor below wall, 3 = floor above wall)
+    private final int[][] map; // The map grid (1 = floor, 0 = wall, 2 = floor below wall, 3 = floor above wall, 4 = wall corner, 5 = wall without floor beside it, 6 = wall beside floor on left, 7 = wall beside floor on right)
     private final Random random;
     private final int boundaryOffset = 1; // Ensure a wall on the sides
 
@@ -88,6 +88,9 @@ public class MapGenerator {
         // Create a random hole on one of the sides (never the corners) of the 5x5 area
         createRandomHole(startX, startY);
 
+        // Update wall types
+        updateWallTypes();
+
         // Update floor tiles below and above walls
         updateFloorsAroundWalls();
 
@@ -153,6 +156,30 @@ public class MapGenerator {
         }
     }
 
+    // Update wall types based on surrounding tiles
+    private void updateWallTypes() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (map[y][x] == 0) { // Wall
+                    boolean hasFloorAbove = (y > 0 && map[y - 1][x] == 1);
+                    boolean hasFloorBelow = (y < height - 1 && map[y + 1][x] == 1);
+                    boolean hasFloorLeft = (x > 0 && map[y][x - 1] == 1);
+                    boolean hasFloorRight = (x < width - 1 && map[y][x + 1] == 1);
+
+                    if (hasFloorAbove && hasFloorBelow && hasFloorLeft && hasFloorRight) {
+                        map[y][x] = 4; // Wall corner
+                    } else if (!hasFloorAbove && !hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
+                        map[y][x] = 5; // Wall without floor beside it
+                    } else if (hasFloorLeft && !hasFloorRight) {
+                        map[y][x] = 6; // Wall beside floor on left
+                    } else if (!hasFloorLeft && hasFloorRight) {
+                        map[y][x] = 7; // Wall beside floor on right
+                    }
+                }
+            }
+        }
+    }
+
     // Update floor tiles below and above walls
     private void updateFloorsAroundWalls() {
         for (int y = 0; y < height - 1; y++) {
@@ -171,14 +198,31 @@ public class MapGenerator {
     public void printMap() {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (map[y][x] == 1) {
-                    System.out.print("."); // Floor
-                } else if (map[y][x] == 0) {
-                    System.out.print("#"); // Wall
-                } else if (map[y][x] == 2) {
-                    System.out.print("+"); // Floor below wall
-                } else if (map[y][x] == 3) {
-                    System.out.print("-"); // Floor above wall
+                switch (map[y][x]) {
+                    case 1:
+                        System.out.print("."); // Floor
+                        break;
+                    case 0:
+                        System.out.print("#"); // Wall
+                        break;
+                    case 2:
+                        System.out.print("+"); // Floor below wall
+                        break;
+                    case 3:
+                        System.out.print("-"); // Floor above wall
+                        break;
+                    case 4:
+                        System.out.print("*"); // Wall corner
+                        break;
+                    case 5:
+                        System.out.print("o"); // Wall without floor beside it
+                        break;
+                    case 6:
+                        System.out.print("<"); // Wall beside floor on left
+                        break;
+                    case 7:
+                        System.out.print(">"); // Wall beside floor on right
+                        break;
                 }
             }
             System.out.println();
